@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using BizHawk.Client.Common;
 using BizHawk.Client.EmuHawk;
 using BizHawk.Common;
+using MetroidFusionExtractor.World;
 
 namespace MetroidFusionExtractor
 {
@@ -20,7 +21,8 @@ namespace MetroidFusionExtractor
 
         private ApiContainer APIs => _maybeAPIContainer!;
 
-        // public RCheevos.GameData? GameData { get; private set; }
+        public GameData? GameData { get; private set; }
+        public WorldData? WorldData { get; private set; }
         // public Server Server { get; private set; }
 
 
@@ -43,20 +45,26 @@ namespace MetroidFusionExtractor
 
         public override void Restart()
         {
-            // UpdateData();
+            UpdateData();
             // labelInfo.Text = string.Join("\n", Server.server.ToString());
         }
 
         protected override void UpdateAfter()
         {
             currentStatus.Clear();
-            // UpdateData();
+            UpdateData();
             // tasks.Add(Server.SendData(GameData));
             HandleTasks();
             // currentStatus.AppendLine($"last served : {Server.lastServedTimestamp}");
+            currentStatus.AppendLine(GameData.Serialize());
             
             
             labelInfo.Text = currentStatus.ToString();
+        }
+
+        private void UpdateData()
+        {
+            GameData = new GameData(APIs.Memory);
         }
 
         private void HandleTasks()
